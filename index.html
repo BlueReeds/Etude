@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz – La matière dans l'Univers</title>
+<style>
+  :root {
+    --bg: #f4f6fb; --card: #ffffff; --text: #1d2433; --muted: #5d6679;
+    --accent: #2f5fd0; --accent-soft: #e6edfc; --border: #d9deea;
+    --good: #1f8a4c; --good-soft: #e3f5ea; --bad: #c0392b; --bad-soft: #fbe7e5;
+    --orange: #d9662b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #10131c; --card: #1a1f2c; --text: #e8ebf3; --muted: #9aa3b8;
+      --accent: #7c9cf0; --accent-soft: #232c45; --border: #2e3547;
+      --good: #4cc584; --good-soft: #1b3326; --bad: #ef7466; --bad-soft: #3a1f1d;
+      --orange: #f0915c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5; padding: 24px 16px 48px;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 20px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; color: var(--accent); }
+  .sub { color: var(--muted); font-size: .95rem; margin: 0; }
+  .progress { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin: 18px 0 8px; }
+  .bar { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+  .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: .9rem; margin-bottom: 12px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,.04); }
+  .q { font-size: 1.1rem; font-weight: 600; margin: 0 0 16px; }
+  .opt {
+    display: block; width: 100%; text-align: left; font: inherit; color: var(--text);
+    background: var(--card); border: 2px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 10px; cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .opt:disabled { cursor: default; }
+  .opt.good { border-color: var(--good); background: var(--good-soft); }
+  .opt.bad { border-color: var(--bad); background: var(--bad-soft); }
+  .letter { font-weight: 700; color: var(--accent); margin-right: 8px; }
+  .hint-btn { background: none; border: none; color: var(--orange); font: inherit; cursor: pointer; padding: 0; margin-top: 4px; text-decoration: underline; }
+  .hint { color: var(--orange); font-style: italic; margin-top: 6px; }
+  .fb { margin-top: 14px; padding: 12px 14px; border-radius: 10px; }
+  .fb.good { background: var(--good-soft); }
+  .fb.bad { background: var(--bad-soft); }
+  .fb strong { display: block; margin-bottom: 4px; }
+  .fb.good strong { color: var(--good); }
+  .fb.bad strong { color: var(--bad); }
+  .next {
+    display: block; margin: 18px 0 0 auto; background: var(--accent); color: #fff; border: none;
+    border-radius: 10px; padding: 11px 22px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  .hidden { display: none; }
+  .result { text-align: center; }
+  .score { font-size: 3rem; font-weight: 800; color: var(--accent); margin: 8px 0; }
+  .recap { text-align: left; margin-top: 18px; }
+  .recap li { margin-bottom: 6px; }
+  .recap .ok { color: var(--good); } .recap .ko { color: var(--bad); }
+
+  /* --- Adaptation smartphone --- */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .opt { min-height: 48px; word-wrap: break-word; }
+  .opt:hover:not(:disabled) { border-color: var(--border); background: var(--card); }
+  @media (hover: hover) {
+    .opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  }
+  .opt:active:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  @media (max-width: 520px) {
+    body { padding-top: 14px; padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
+    h1 { font-size: 1.25rem; }
+    .sub { font-size: .85rem; }
+    .card { padding: 16px; border-radius: 12px; }
+    .q { font-size: 1.02rem; }
+    .opt { padding: 12px; font-size: .97rem; }
+    .fb { font-size: .95rem; }
+    .hint-btn { padding: 8px 0; }
+    .next { width: 100%; text-align: center; padding: 14px; }
+    .score { font-size: 2.5rem; }
+    .recap { padding-left: 20px; font-size: .92rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>La matière dans l'espace et dans l'Univers</h1>
+    <p class="sub">Quiz de révision – 4ᵉ – Activités 1 à 4</p>
+  </header>
+
+  <div id="quiz">
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="meta"><span id="count"></span><span id="scoreLive"></span></div>
+    <div class="card">
+      <p class="q" id="question"></p>
+      <div id="options"></div>
+      <button class="hint-btn" id="hintBtn">💡 Afficher un indice</button>
+      <div class="hint hidden" id="hint"></div>
+      <div class="fb hidden" id="fb"></div>
+      <button class="next hidden" id="next">Question suivante →</button>
+    </div>
+  </div>
+
+  <div id="end" class="card result hidden">
+    <h2>Quiz terminé !</h2>
+    <div class="score" id="finalScore"></div>
+    <p id="message"></p>
+    <ol class="recap" id="recap"></ol>
+    <button class="next" style="margin:18px auto 0" onclick="start()">Recommencer</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  { q: "Quel est l'âge approximatif de l'Univers ?",
+    o: ["4,6 milliards d'années", "13,7 milliards d'années", "100 millions d'années", "1 000 milliards d'années"], a: 1,
+    h: "C'est beaucoup plus vieux que le Soleil.",
+    e: "L'Univers a environ 13,7 milliards d'années (ordre de grandeur à retenir : environ 15 milliards). 4,6 milliards d'années, c'est l'âge du système solaire." },
+  { q: "La Terre a mis environ 100 millions d'années à se former, et le système solaire a 4,6 milliards d'années. Cela représente environ quel pourcentage de son âge ?",
+    o: ["Environ 2 %", "Environ 20 %", "Environ 46 %", "Environ 0,2 %"], a: 0,
+    h: "Utilise la formule : durée × 100 ÷ âge.",
+    e: "Calcul : 100 000 000 × 100 ÷ 4 600 000 000 ≈ 2 %." },
+  { q: "D'où provient la matière qui forme les étoiles, les planètes et les êtres vivants ?",
+    o: ["Uniquement du Soleil", "De débris d'explosions d'étoiles mêlés à un nuage d'hydrogène (une nébuleuse)", "Des comètes seulement", "Elle a été créée par la Terre"], a: 1,
+    e: "La matière vient d'une nébuleuse : un nuage d'hydrogène mélangé aux débris d'étoiles qui ont explosé. Au départ, toute cette matière vient du Big Bang." },
+  { q: "Quels sont les deux faits observés qui rendent l'hypothèse du Big Bang la plus sérieuse ?",
+    o: ["Les saisons et les marées", "Les éclipses et les phases de la Lune", "Les galaxies s'éloignent les unes des autres, et on observe le fond diffus cosmologique", "Les étoiles filantes et les comètes"], a: 2,
+    e: "Les grands ensembles de matière s'éloignent les uns des autres, et on observe le fond diffus cosmologique, considéré comme la première lumière émise par l'Univers." },
+  { q: "Comment notre système solaire s'est-il formé ?",
+    o: ["Une étoile a explosé et ses morceaux sont devenus les planètes", "La gravitation a contracté une nébuleuse en disque : le centre est devenu une étoile et le pourtour, en anneaux, a donné les planètes", "Les planètes existaient avant le Soleil et l'ont attiré", "Il s'est formé en même temps que l'Univers"], a: 1,
+    e: "Il y a 4,6 milliards d'années, la gravitation a contracté une nébuleuse en disque. Le centre est devenu le Soleil, et le pourtour, divisé en anneaux, a formé les planètes." },
+  { q: "Quelle caractéristique permet à un noyau de planète de capturer de grandes quantités de matière ?",
+    o: ["Sa couleur", "Sa vitesse de rotation", "Sa masse", "Sa température"], a: 2,
+    e: "Plus un noyau est massif, plus il attire fortement la matière autour de lui." },
+  { q: "Pourquoi les planètes géantes gazeuses sont-elles loin du Soleil ?",
+    o: ["Le Soleil les a repoussées", "En périphérie de la nébuleuse, plus froide, il y avait plus de matière solide pour former des noyaux massifs", "Le gaz est plus léger et s'envole loin", "Elles se sont formées après les autres planètes"], a: 1,
+    h: "Pense à la température dans la nébuleuse.",
+    e: "Au centre, il fait trop chaud. En périphérie, plus froide, il y a plus de matière solide : des noyaux massifs se forment et captent assez de gaz pour devenir des géantes." },
+  { q: "Que vaut 1 unité astronomique (UA) ?",
+    o: ["La distance Terre-Lune, environ 384 000 km", "La distance moyenne Terre-Soleil, environ 1,5 × 10⁸ km", "La distance parcourue par la lumière en un an", "Le diamètre de la Terre"], a: 1,
+    e: "1 UA correspond à la distance moyenne Terre-Soleil, soit environ 150 millions de km (1,5 × 10⁸ km)." },
+  { q: "Jupiter est à 5,2 UA du Soleil. Cela fait environ combien de km ?",
+    o: ["7,8 × 10⁸ km", "5,2 × 10⁸ km", "1,5 × 10⁸ km", "78 000 km"], a: 0,
+    h: "Multiplie par la valeur d'une UA.",
+    e: "5,2 × 1,5 × 10⁸ = 7,8 × 10⁸ km, soit 780 millions de km." },
+  { q: "Qu'est-ce qu'une année-lumière ?",
+    o: ["Une durée : le temps que met la lumière du Soleil pour arriver sur Terre", "Une distance : celle que parcourt la lumière en une année, environ 9,5 × 10¹⁵ m", "L'âge d'une étoile", "Une année sur une autre planète"], a: 1,
+    h: "Piège classique : ce n'est pas une durée !",
+    e: "Malgré son nom, l'année-lumière est une DISTANCE : 3,0 × 10⁸ m/s × (365,25 × 24 × 3 600 s) ≈ 9,5 × 10¹⁵ m." },
+  { q: "Quelle unité est la plus adaptée pour exprimer la distance jusqu'à la galaxie d'Andromède ?",
+    o: ["Le kilomètre", "L'unité astronomique", "L'année-lumière", "Le mètre"], a: 2,
+    e: "On utilise l'UA dans le système solaire, et l'année-lumière pour les distances dans l'Univers (étoiles, galaxies). Andromède est à environ 2,5 millions d'a.l." },
+  { q: "Quel classement va bien du plus petit au plus grand ?",
+    o: ["Système solaire < étoile < galaxie < Univers", "Étoile < galaxie < système solaire < Univers", "Étoile < système solaire < galaxie < Univers", "Galaxie < étoile < système solaire < Univers"], a: 2,
+    e: "Une étoile fait partie d'un système (comme le système solaire), qui fait partie d'une galaxie, qui fait partie de l'Univers." },
+  { q: "Un laser fait l'aller-retour Terre-Lune en 2,56 s, à 300 000 km/s. Quelle est la distance Terre-Lune ?",
+    o: ["768 000 km", "384 000 km", "84 000 km", "300 000 km"], a: 1,
+    h: "N'oublie pas que c'est un aller-retour !",
+    e: "d = v × t = 300 000 × 2,56 = 768 000 km pour l'aller-retour. On divise par 2 : la distance Terre-Lune vaut 384 000 km." },
+  { q: "Sur le schéma, 1 cm représente environ 6 200 km pour les diamètres, mais environ 110 000 km pour la distance Terre-Lune. Que peut-on conclure ?",
+    o: ["Le schéma est parfaitement à l'échelle", "Le schéma n'est pas à l'échelle, car il utilise deux échelles différentes", "La Lune est plus grande que la Terre", "On ne peut rien conclure"], a: 1,
+    e: "Un schéma est à l'échelle seulement si tous ses éléments sont représentés avec la même échelle. Ici, diamètres et distances ont des échelles différentes." }
+];
+
+const GOOD = ["Bravo !", "Exact !", "Parfait !", "Très bien !", "Bien joué !"];
+const BAD = ["Pas tout à fait…", "Raté, mais continue !", "Ce n'est pas ça…"];
+let i, score, answers;
+const $ = id => document.getElementById(id);
+
+function start() {
+  i = 0; score = 0; answers = [];
+  $("end").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
+  show();
+}
+
+function show() {
+  const Q = QUESTIONS[i];
+  $("count").textContent = `Question ${i + 1} / ${QUESTIONS.length}`;
+  $("scoreLive").textContent = `Score : ${score}`;
+  $("bar").style.width = (i / QUESTIONS.length * 100) + "%";
+  $("question").textContent = Q.q;
+  const box = $("options"); box.innerHTML = "";
+  Q.o.forEach((txt, k) => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.innerHTML = `<span class="letter">${"ABCD"[k]}</span>`;
+    b.appendChild(document.createTextNode(txt));
+    b.onclick = () => choose(k);
+    box.appendChild(b);
+  });
+  $("hint").classList.add("hidden");
+  $("hintBtn").classList.toggle("hidden", !Q.h);
+  $("hint").textContent = Q.h || "";
+  $("fb").className = "fb hidden";
+  $("next").classList.add("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+$("hintBtn").onclick = () => { $("hint").classList.remove("hidden"); $("hintBtn").classList.add("hidden"); };
+
+function choose(k) {
+  const Q = QUESTIONS[i], ok = k === Q.a;
+  if (ok) score++;
+  answers.push(ok);
+  [...$("options").children].forEach((b, n) => {
+    b.disabled = true;
+    if (n === Q.a) b.classList.add("good");
+    else if (n === k) b.classList.add("bad");
+  });
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const fb = $("fb");
+  fb.className = "fb " + (ok ? "good" : "bad");
+  fb.innerHTML = `<strong>${ok ? pick(GOOD) : pick(BAD)}</strong>`;
+  fb.appendChild(document.createTextNode(Q.e));
+  $("hintBtn").classList.add("hidden");
+  $("scoreLive").textContent = `Score : ${score}`;
+  const n = $("next");
+  n.textContent = i === QUESTIONS.length - 1 ? "Voir mon résultat →" : "Question suivante →";
+  n.classList.remove("hidden");
+  n.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+$("next").onclick = () => { i++; i < QUESTIONS.length ? show() : finish(); };
+
+function finish() {
+  $("quiz").classList.add("hidden");
+  $("end").classList.remove("hidden");
+  const total = QUESTIONS.length, note = Math.round(score / total * 20 * 10) / 10;
+  $("finalScore").textContent = `${score} / ${total}`;
+  let msg = `Soit ${note.toString().replace(".", ",")} / 20. `;
+  msg += score === total ? "Sans faute, félicitations ! 🚀"
+       : score >= total * 0.75 ? "Très bon travail, la leçon est bien comprise !"
+       : score >= total * 0.5 ? "C'est un bon début, relis les questions ratées."
+       : "Relis tes fiches d'activités et réessaie !";
+  $("message").textContent = msg;
+  $("recap").innerHTML = QUESTIONS.map((Q, n) =>
+    `<li><span class="${answers[n] ? "ok" : "ko"}">${answers[n] ? "✔" : "✘"}</span> ${Q.q}</li>`).join("");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+start();
+</script>
+</body>
+</html>
