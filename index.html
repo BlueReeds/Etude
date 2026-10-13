@@ -2,14 +2,19 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quiz – La matière dans l'Univers</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Révisions – La matière dans l'Univers</title>
+<meta name="description" content="Carte mentale et quiz de révision pour la 4ᵉ : la matière dans l'espace et dans l'Univers.">
 <style>
   :root {
     --bg: #f4f6fb; --card: #ffffff; --text: #1d2433; --muted: #5d6679;
     --accent: #2f5fd0; --accent-soft: #e6edfc; --border: #d9deea;
     --good: #1f8a4c; --good-soft: #e3f5ea; --bad: #c0392b; --bad-soft: #fbe7e5;
     --orange: #d9662b;
+    --b1: #6a4fc9; --b1s: #efebfb;
+    --b2: #c9692a; --b2s: #fbefe6;
+    --b3: #2f7fb8; --b3s: #e5f1fa;
+    --b4: #2a8a5c; --b4s: #e4f4ec;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -17,74 +22,120 @@
       --accent: #7c9cf0; --accent-soft: #232c45; --border: #2e3547;
       --good: #4cc584; --good-soft: #1b3326; --bad: #ef7466; --bad-soft: #3a1f1d;
       --orange: #f0915c;
+      --b1: #a993f2; --b1s: #2a2342;
+      --b2: #f0a06a; --b2s: #3a2a1e;
+      --b3: #6fb5e6; --b3s: #1d2e3d;
+      --b4: #63c996; --b4s: #1a3328;
     }
   }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    line-height: 1.5; padding: 24px 16px 48px;
+    line-height: 1.5;
+    padding: 20px max(16px, env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   }
-  .wrap { max-width: 680px; margin: 0 auto; }
-  header { text-align: center; margin-bottom: 20px; }
+  button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 16px; }
   h1 { font-size: 1.5rem; margin: 0 0 4px; color: var(--accent); }
   .sub { color: var(--muted); font-size: .95rem; margin: 0; }
-  .progress { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin: 18px 0 8px; }
+
+  /* Onglets */
+  .tabs { display: flex; gap: 6px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 5px; max-width: 420px; margin: 0 auto 22px; }
+  .tab { flex: 1; font: inherit; font-weight: 600; border: none; background: none; color: var(--muted); padding: 10px; border-radius: 8px; cursor: pointer; }
+  .tab[aria-selected="true"] { background: var(--accent); color: #fff; }
+  .hidden { display: none !important; }
+
+  /* Carte mentale */
+  .center {
+    width: fit-content; max-width: 100%; margin: 0 auto; text-align: center;
+    background: var(--accent); color: #fff; border-radius: 18px; padding: 14px 24px;
+    font-weight: 700; font-size: 1.15rem; box-shadow: 0 4px 16px rgba(47,95,208,.25);
+  }
+  .center small { display: block; font-weight: 500; opacity: .85; font-size: .82rem; }
+  .trunk { width: 3px; height: 26px; background: var(--border); margin: 0 auto; }
+  .branches { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; position: relative; }
+  .branch { background: var(--card); border: 1px solid var(--border); border-top: 5px solid var(--c); border-radius: 14px; padding: 4px 16px 14px; }
+  .branch summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; font-weight: 700; color: var(--c); font-size: 1.05rem;
+  }
+  .branch summary::-webkit-details-marker { display: none; }
+  .branch summary .num { background: var(--c); color: var(--card); width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: .9rem; flex-shrink: 0; }
+  .branch summary .chev { margin-left: auto; transition: transform .2s; color: var(--muted); }
+  .branch[open] summary .chev { transform: rotate(90deg); }
+  .node { position: relative; margin: 0 0 8px 12px; padding-left: 16px; border-left: 2px solid var(--cs2, var(--border)); }
+  .node:last-child { margin-bottom: 0; }
+  .node b { display: block; color: var(--c); font-size: .95rem; }
+  .node p, .node ul { margin: 2px 0 0; font-size: .93rem; }
+  .node ul { padding-left: 18px; }
+  .pill { display: inline-block; background: var(--cs); color: var(--text); border-radius: 6px; padding: 1px 7px; font-weight: 600; white-space: nowrap; }
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 4px; }
+  .chain span.step { background: var(--cs); border-radius: 8px; padding: 3px 9px; font-size: .88rem; font-weight: 600; }
+  .chain .arrow { color: var(--c); font-weight: 700; }
+  .b1 { --c: var(--b1); --cs: var(--b1s); } .b2 { --c: var(--b2); --cs: var(--b2s); }
+  .b3 { --c: var(--b3); --cs: var(--b3s); } .b4 { --c: var(--b4); --cs: var(--b4s); }
+  .vocab { margin-top: 18px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+  .vocab h2 { margin: 0 0 10px; font-size: 1.05rem; color: var(--accent); }
+  .vocab dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 16px; margin: 0; }
+  .vocab dt { font-weight: 700; color: var(--orange); }
+  .vocab dd { margin: 0 0 4px; font-size: .92rem; }
+  .tools { text-align: center; margin: 12px 0 0; }
+  .ghost { font: inherit; font-size: .9rem; background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  .cta { display: block; margin: 22px auto 0; font: inherit; font-weight: 600; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 12px 24px; cursor: pointer; }
+
+  /* Quiz */
+  .quizwrap { max-width: 680px; margin: 0 auto; }
+  .progress { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin: 0 0 8px; }
   .bar { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
   .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: .9rem; margin-bottom: 12px; }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,.04); }
   .q { font-size: 1.1rem; font-weight: 600; margin: 0 0 16px; }
   .opt {
-    display: block; width: 100%; text-align: left; font: inherit; color: var(--text);
+    display: block; width: 100%; min-height: 48px; text-align: left; font: inherit; color: var(--text);
     background: var(--card); border: 2px solid var(--border); border-radius: 10px;
     padding: 12px 14px; margin-bottom: 10px; cursor: pointer; transition: border-color .15s, background .15s;
   }
-  .opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  @media (hover: hover) { .opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); } }
+  .opt:active:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
   .opt:disabled { cursor: default; }
   .opt.good { border-color: var(--good); background: var(--good-soft); }
   .opt.bad { border-color: var(--bad); background: var(--bad-soft); }
   .letter { font-weight: 700; color: var(--accent); margin-right: 8px; }
-  .hint-btn { background: none; border: none; color: var(--orange); font: inherit; cursor: pointer; padding: 0; margin-top: 4px; text-decoration: underline; }
+  .hint-btn { background: none; border: none; color: var(--orange); font: inherit; cursor: pointer; padding: 6px 0; text-decoration: underline; }
   .hint { color: var(--orange); font-style: italic; margin-top: 6px; }
   .fb { margin-top: 14px; padding: 12px 14px; border-radius: 10px; }
-  .fb.good { background: var(--good-soft); }
-  .fb.bad { background: var(--bad-soft); }
+  .fb.good { background: var(--good-soft); } .fb.bad { background: var(--bad-soft); }
   .fb strong { display: block; margin-bottom: 4px; }
-  .fb.good strong { color: var(--good); }
-  .fb.bad strong { color: var(--bad); }
-  .next {
-    display: block; margin: 18px 0 0 auto; background: var(--accent); color: #fff; border: none;
-    border-radius: 10px; padding: 11px 22px; font: inherit; font-weight: 600; cursor: pointer;
-  }
-  .hidden { display: none; }
+  .fb.good strong { color: var(--good); } .fb.bad strong { color: var(--bad); }
+  .next { display: block; margin: 18px 0 0 auto; background: var(--accent); color: #fff; border: none; border-radius: 10px; padding: 11px 22px; font: inherit; font-weight: 600; cursor: pointer; }
   .result { text-align: center; }
   .score { font-size: 3rem; font-weight: 800; color: var(--accent); margin: 8px 0; }
   .recap { text-align: left; margin-top: 18px; }
   .recap li { margin-bottom: 6px; }
   .recap .ok { color: var(--good); } .recap .ko { color: var(--bad); }
 
-  /* --- Adaptation smartphone --- */
-  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  body { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
-  button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-  .opt { min-height: 48px; word-wrap: break-word; }
-  .opt:hover:not(:disabled) { border-color: var(--border); background: var(--card); }
-  @media (hover: hover) {
-    .opt:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  @media (max-width: 720px) {
+    .branches { grid-template-columns: 1fr; }
   }
-  .opt:active:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
   @media (max-width: 520px) {
-    body { padding-top: 14px; padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
+    body { padding-top: 14px; }
     h1 { font-size: 1.25rem; }
     .sub { font-size: .85rem; }
+    .center { font-size: 1.02rem; padding: 12px 18px; }
     .card { padding: 16px; border-radius: 12px; }
     .q { font-size: 1.02rem; }
     .opt { padding: 12px; font-size: .97rem; }
-    .fb { font-size: .95rem; }
-    .hint-btn { padding: 8px 0; }
     .next { width: 100%; text-align: center; padding: 14px; }
     .score { font-size: 2.5rem; }
     .recap { padding-left: 20px; font-size: .92rem; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .tabs, .tools, .cta, #quizView { display: none !important; }
+    .branch { break-inside: avoid; }
   }
 </style>
 </head>
@@ -92,29 +143,160 @@
 <div class="wrap">
   <header>
     <h1>La matière dans l'espace et dans l'Univers</h1>
-    <p class="sub">Quiz de révision – 4ᵉ – Activités 1 à 4</p>
+    <p class="sub">Révisions – 4ᵉ – Activités 1 à 4</p>
   </header>
 
-  <div id="quiz">
-    <div class="progress"><div class="bar" id="bar"></div></div>
-    <div class="meta"><span id="count"></span><span id="scoreLive"></span></div>
-    <div class="card">
-      <p class="q" id="question"></p>
-      <div id="options"></div>
-      <button class="hint-btn" id="hintBtn">💡 Afficher un indice</button>
-      <div class="hint hidden" id="hint"></div>
-      <div class="fb hidden" id="fb"></div>
-      <button class="next hidden" id="next">Question suivante →</button>
-    </div>
-  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tabCarte" data-view="carte">🧠 Carte mentale</button>
+    <button class="tab" role="tab" id="tabQuiz" data-view="quiz">✏️ Quiz</button>
+  </nav>
 
-  <div id="end" class="card result hidden">
-    <h2>Quiz terminé !</h2>
-    <div class="score" id="finalScore"></div>
-    <p id="message"></p>
-    <ol class="recap" id="recap"></ol>
-    <button class="next" style="margin:18px auto 0" onclick="start()">Recommencer</button>
-  </div>
+  <!-- ===================== CARTE MENTALE ===================== -->
+  <section id="carteView">
+    <div class="center">La matière dans l'Univers<small>Origines, distances et échelles</small></div>
+    <div class="trunk"></div>
+
+    <div class="branches">
+      <details class="branch b1" open>
+        <summary><span class="num">1</span>Origine de l'Univers et de la Terre<span class="chev">›</span></summary>
+        <div class="node"><b>Des âges à retenir</b>
+          <ul>
+            <li>Univers : <span class="pill">13,7 milliards d'années</span> (≈ 15)</li>
+            <li>Notre galaxie : ≈ <span class="pill">10 milliards d'années</span></li>
+            <li>Système solaire : <span class="pill">4,6 milliards d'années</span> (≈ 5)</li>
+          </ul>
+        </div>
+        <div class="node"><b>Preuves du Big Bang</b>
+          <ul>
+            <li>Les galaxies s'éloignent les unes des autres</li>
+            <li>Le fond diffus cosmologique (1ʳᵉ lumière de l'Univers)</li>
+          </ul>
+        </div>
+        <div class="node"><b>Formation du système solaire</b>
+          <div class="chain">
+            <span class="step">Nébuleuse</span><span class="arrow">→</span>
+            <span class="step">Disque (gravitation)</span><span class="arrow">→</span>
+            <span class="step">Centre = étoile</span><span class="arrow">+</span>
+            <span class="step">Anneaux = planètes</span>
+          </div>
+        </div>
+        <div class="node"><b>Origine de la matière</b>
+          <p>Nébuleuse = nuage d'hydrogène + débris d'étoiles explosées. Toute la matière vient du <span class="pill">Big Bang</span>.</p>
+        </div>
+        <div class="node"><b>Formation de la Terre</b>
+          <p>≈ 100 millions d'années, soit ≈ <span class="pill">2 %</span> de l'âge du système solaire<br>(durée × 100 ÷ âge).</p>
+        </div>
+      </details>
+
+      <details class="branch b2" open>
+        <summary><span class="num">2</span>Les planètes géantes gazeuses<span class="chev">›</span></summary>
+        <div class="node"><b>Constat</b>
+          <p>Planètes telluriques proches du Soleil, géantes gazeuses loin.</p>
+        </div>
+        <div class="node"><b>Explication</b>
+          <div class="chain">
+            <span class="step">Périphérie froide</span><span class="arrow">→</span>
+            <span class="step">Matière solide</span><span class="arrow">→</span>
+            <span class="step">Noyau massif</span><span class="arrow">→</span>
+            <span class="step">Capte le gaz</span>
+          </div>
+        </div>
+        <div class="node"><b>Mot-clé</b>
+          <p>C'est la <span class="pill">masse</span> du noyau qui lui permet d'attirer beaucoup de matière.</p>
+        </div>
+        <div class="node"><b>Distances au Soleil (en UA)</b>
+          <p>Mercure 0,38 · Vénus 0,72 · Terre 1 · Mars 1,52 · Jupiter 5,2 · Saturne 9,5 · Uranus 19,2 · Neptune 30,1</p>
+        </div>
+      </details>
+
+      <details class="branch b3" open>
+        <summary><span class="num">3</span>Distances et unités<span class="chev">›</span></summary>
+        <div class="node"><b>Unité astronomique (UA)</b>
+          <p>Distance moyenne Terre-Soleil : <span class="pill">1 UA ≈ 1,5 × 10⁸ km</span><br>➜ pour le <strong>système solaire</strong></p>
+        </div>
+        <div class="node"><b>Année-lumière (a.l.)</b>
+          <p>Distance parcourue par la lumière en 1 an : <span class="pill">≈ 9,5 × 10¹⁵ m</span><br>➜ pour les <strong>étoiles et galaxies</strong></p>
+          <p>⚠️ C'est une <strong>distance</strong>, pas une durée !</p>
+        </div>
+        <div class="node"><b>Puissances de dix</b>
+          <p>Elles allègent l'écriture des très grands nombres.</p>
+        </div>
+        <div class="node"><b>Du plus petit au plus grand</b>
+          <div class="chain">
+            <span class="step">Étoile</span><span class="arrow">&lt;</span>
+            <span class="step">Système solaire</span><span class="arrow">&lt;</span>
+            <span class="step">Galaxie</span><span class="arrow">&lt;</span>
+            <span class="step">Univers</span>
+          </div>
+        </div>
+      </details>
+
+      <details class="branch b4" open>
+        <summary><span class="num">4</span>Échelles et schémas<span class="chev">›</span></summary>
+        <div class="node"><b>Relation à connaître</b>
+          <p><span class="pill">d = v × t</span> (vitesse de la lumière ≈ 300 000 km/s)</p>
+        </div>
+        <div class="node"><b>Distance Terre-Lune au laser</b>
+          <p>300 000 × 2,56 = 768 000 km (aller-retour)<br>÷ 2 ➜ <span class="pill">384 000 km</span></p>
+        </div>
+        <div class="node"><b>Calculer une échelle</b>
+          <p>1 cm représente : distance réelle ÷ mesure sur le schéma</p>
+          <ul>
+            <li>Diamètres : 1 cm ≈ 6 200 km</li>
+            <li>Distance Terre-Lune : 1 cm ≈ 110 000 km</li>
+          </ul>
+        </div>
+        <div class="node"><b>Conclusion</b>
+          <p>Un schéma est <strong>à l'échelle</strong> seulement si tous ses éléments ont la <strong>même échelle</strong>. Ici, ce n'est pas le cas.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="vocab">
+      <h2>📖 Vocabulaire</h2>
+      <dl>
+        <div><dt>Cosmos</dt><dd>Synonyme de l'Univers.</dd></div>
+        <div><dt>Univers</dt><dd>Ensemble de tout ce qui existe.</dd></div>
+        <div><dt>Étoile</dt><dd>Astre qui produit de la lumière.</dd></div>
+        <div><dt>Planète</dt><dd>Astre sphérique qui a nettoyé son orbite autour d'une étoile.</dd></div>
+        <div><dt>Galaxie</dt><dd>Regroupement très vaste d'étoiles et de matière interstellaire.</dd></div>
+        <div><dt>Corps céleste</dt><dd>Tout objet se déplaçant dans l'espace.</dd></div>
+        <div><dt>Géante gazeuse</dt><dd>Planète très massive et volumineuse.</dd></div>
+        <div><dt>Nébuleuse</dt><dd>Nuage de gaz (hydrogène) et de poussières.</dd></div>
+      </dl>
+    </div>
+
+    <p class="tools">
+      <button class="ghost" id="toggleAll">Tout replier</button>
+      <button class="ghost" onclick="window.print()">🖨️ Imprimer la carte</button>
+    </p>
+    <button class="cta" data-view="quiz">Je suis prêt : faire le quiz →</button>
+  </section>
+
+  <!-- ===================== QUIZ ===================== -->
+  <section id="quizView" class="quizwrap hidden">
+    <div id="quiz">
+      <div class="progress"><div class="bar" id="bar"></div></div>
+      <div class="meta"><span id="count"></span><span id="scoreLive"></span></div>
+      <div class="card">
+        <p class="q" id="question"></p>
+        <div id="options"></div>
+        <button class="hint-btn" id="hintBtn">💡 Afficher un indice</button>
+        <div class="hint hidden" id="hint"></div>
+        <div class="fb hidden" id="fb"></div>
+        <button class="next hidden" id="next">Question suivante →</button>
+      </div>
+    </div>
+
+    <div id="end" class="card result hidden">
+      <h2>Quiz terminé !</h2>
+      <div class="score" id="finalScore"></div>
+      <p id="message"></p>
+      <ol class="recap" id="recap"></ol>
+      <button class="next" style="margin:18px auto 0" onclick="start()">Recommencer</button>
+      <button class="ghost" style="margin-top:12px" data-view="carte">Revoir la carte mentale</button>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -169,10 +351,40 @@ const QUESTIONS = [
     e: "Un schéma est à l'échelle seulement si tous ses éléments sont représentés avec la même échelle. Ici, diamètres et distances ont des échelles différentes." }
 ];
 
+const $ = id => document.getElementById(id);
+
+/* ---------- Navigation entre les onglets ---------- */
+function showView(v) {
+  if (v !== "quiz") v = "carte";
+  $("carteView").classList.toggle("hidden", v !== "carte");
+  $("quizView").classList.toggle("hidden", v !== "quiz");
+  $("tabCarte").setAttribute("aria-selected", v === "carte");
+  $("tabQuiz").setAttribute("aria-selected", v === "quiz");
+  if (location.hash !== "#" + v) history.replaceState(null, "", "#" + v);
+  window.scrollTo(0, 0);
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-view]");
+  if (t) showView(t.dataset.view);
+});
+window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
+
+/* ---------- Carte : tout replier / déplier ---------- */
+$("toggleAll").onclick = () => {
+  const all = [...document.querySelectorAll(".branch")];
+  const open = all.some(d => d.open);
+  all.forEach(d => d.open = !open);
+  $("toggleAll").textContent = open ? "Tout déplier" : "Tout replier";
+};
+if (window.matchMedia("(max-width: 520px)").matches) {
+  document.querySelectorAll(".branch").forEach((d, n) => d.open = n === 0);
+  $("toggleAll").textContent = "Tout déplier";
+}
+
+/* ---------- Quiz ---------- */
 const GOOD = ["Bravo !", "Exact !", "Parfait !", "Très bien !", "Bien joué !"];
 const BAD = ["Pas tout à fait…", "Raté, mais continue !", "Ce n'est pas ça…"];
 let i, score, answers;
-const $ = id => document.getElementById(id);
 
 function start() {
   i = 0; score = 0; answers = [];
@@ -238,8 +450,8 @@ function finish() {
   let msg = `Soit ${note.toString().replace(".", ",")} / 20. `;
   msg += score === total ? "Sans faute, félicitations ! 🚀"
        : score >= total * 0.75 ? "Très bon travail, la leçon est bien comprise !"
-       : score >= total * 0.5 ? "C'est un bon début, relis les questions ratées."
-       : "Relis tes fiches d'activités et réessaie !";
+       : score >= total * 0.5 ? "C'est un bon début, relis la carte mentale puis réessaie."
+       : "Relis la carte mentale et réessaie !";
   $("message").textContent = msg;
   $("recap").innerHTML = QUESTIONS.map((Q, n) =>
     `<li><span class="${answers[n] ? "ok" : "ko"}">${answers[n] ? "✔" : "✘"}</span> ${Q.q}</li>`).join("");
@@ -247,6 +459,7 @@ function finish() {
 }
 
 start();
+showView(location.hash.slice(1));
 </script>
 </body>
 </html>
